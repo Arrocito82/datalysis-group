@@ -1,5 +1,6 @@
 import express from 'express';
 import { PrismaClient, Prisma } from '@prisma/client';
+import { log } from 'console';
 
 const prisma = new PrismaClient();
 const app = express();
@@ -10,6 +11,22 @@ const errorHandler = (e, req, res) => {
     );
   }
 }
+app.route('/job-collection')
+  .post(async (req, res) => {
+    const jobs = req.body;
+    // console.log(jobs);
+    try{
+      const createMany = await prisma.job.createMany({
+        data: jobs,
+        skipDuplicates: true, // Skip 'Bobo'
+      });
+      return res.json(createMany);
+    }catch(e){
+      if(e instanceof Prisma.PrismaClientKnownRequestError){
+        errorHandler(e, req, res);
+      }
+    }
+  });
 app.route('/jobs')
   .post(async (req, res) => {
     const { id, name } = req.body;
