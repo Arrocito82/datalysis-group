@@ -39,38 +39,43 @@ app.route('/jobs')
   })
   .get(async (req, res) => {
     const jobs = await prisma.job.findMany({
-      // where: { published: true },
-      // include: { author: true },
+      // where: { id: id },
+      // include: { departments: true },
     });
     return res.json({ data: jobs });
   });
 
-app.get('/feed', async (req, res) => {
-  const posts = await prisma.post.findMany({
-    where: { published: true },
-    include: { author: true },
-  })
-  return res.json(posts)
+app.route('/jobs/:id')
+.get(async (req, res) => {
+  const { id } = req.params;
+  try{
+    const job = await prisma.job.findUnique({
+      where: { id: id },
+      include: { departments: true },
+    });
+    return res.json(job);
+  }catch(e){
+    return res.status(404).json({ error: `Job with ID ${id} not found` });
+  }
+})
+.put(async (req, res) => {
+  const { id } = req.params;
+  const { name } = req.body;
+  const job = await prisma.job.update({
+    where: { id:parseInt(id) },
+    data: {  name:name },
+  });
+  return res.json(job);
 });
 
-
-app.put('/publish/:id', async (req, res) => {
-  const { id } = req.params
-  const post = await prisma.post.update({
-    where: { id },
-    data: { published: true },
-  })
-  return res.json(post)
-});
-
-app.delete('/user/:id', async (req, res) => {
-  const { id } = req.params
-  const user = await prisma.user.delete({
+app.delete('/jobs/:id', async (req, res) => {
+  const { id } = req.params;
+  const job = await prisma.job.delete({
     where: {
-      id,
+      id:parseInt(id)
     },
   })
-  return res.json(user)
+  return res.json(job);
 });
 
 app.listen(process.env.PORT, () => {
