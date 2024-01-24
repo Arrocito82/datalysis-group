@@ -34,64 +34,7 @@ departmentsRouter.route('/:id')
   .get(getDepartmentByID)
   .put(updateDepartmentByID)
   .delete(deleteDepartmentByID);
-hiredEmployeesRouter.get('/:year/reporte1',async (req, res) => {
-  const { year } = req.params;
-  const result = await prisma.$queryRaw(
-    Prisma.sql`SELECT "Department"."name" as "departmentName", 
-    "Job"."name"  as "jobName", 
-    sum(CASE
-      WHEN extract(quarter from "HiredEmployee"."hire")=1 THEN 1
-    ELSE
-      0
-    END) as "Q1",
-    sum(CASE
-      WHEN extract(quarter from "HiredEmployee"."hire")=2 THEN 1
-    ELSE
-      0
-    END) as "Q2",
-    sum(CASE
-      WHEN extract(quarter from "HiredEmployee"."hire")=3 THEN 1
-    ELSE
-      0
-    END) as "Q3",
-    sum(CASE
-      WHEN extract(quarter from "HiredEmployee"."hire")=4 THEN 1
-    ELSE
-      0
-    END) as "Q4"
-    FROM  "HiredEmployee", "Department", "Job" 
-    where "HiredEmployee"."departmentId" = "Department"."id" 
-    and "HiredEmployee"."jobId" = "Job"."id" 
-    GROUP BY "departmentName", "jobName"
-    ORDER BY "departmentName" ASC, "jobName" ASC ;`
-  );
-  /**
-    GROUP BY "departmentName", "jobName"	  
-    extract(quarter from "HiredEmployee"."hire") as "quarter"  
-  sum(CASE
-      WHEN extract(quarter from "HiredEmployee"."hire")=1 THEN 1
-    ELSE
-      0
-    END) as "Q1",
-    sum(CASE
-      WHEN extract(quarter from "HiredEmployee"."hire")=2 THEN 1
-    ELSE
-      0
-    END) as "Q2",
-    sum(CASE
-      WHEN extract(quarter from "HiredEmployee"."hire")=3 THEN 1
-    ELSE
-      0
-    END) as "Q3",
-    sum(CASE
-      WHEN extract(quarter from "HiredEmployee"."hire")=4 THEN 1
-    ELSE
-      0
-    END) as "Q4"
-   */
-  console.log(result);
-  return res.json("Working");
-});
+hiredEmployeesRouter.get('/:year/reporte1',getHiredEmployeesPerDepartmentForEachQuaterPerYear);
 // hiredEmployeesRouter.get('/:year/reporte1',getHiredEmployeesPerDepartmentForEachQuaterPerYear);
 hiredEmployeesRouter.get('/:year/reporte2',getHiredEmployeesPerDepartmentPerYearAboveAverage);
 hiredEmployeesRouter.route('/collection')

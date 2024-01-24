@@ -288,17 +288,64 @@ const deleteHiredEmployeeByID = async (req, res) => {
 };
 const getHiredEmployeesPerDepartmentForEachQuaterPerYear = async (req, res) => {
   const { year } = req.params;
-  const result = await prisma.hiredEmployee.groupBy({
-    by: ['departmentId'],
-    // _count: {
-    //   id: true,
-    // },
-    // orderBy: {
-    //   _count: {
-    //     departmentId: 'desc',
-    //   },
-    // },
-  });
+  const result = await prisma.$queryRaw(
+    Prisma.sql`SELECT "Department"."name" as "department", 
+    "Job"."name"  as "job", 
+    sum(
+      CASE
+        WHEN extract(quarter from "HiredEmployee"."hire")=1
+        and extract(year from "HiredEmployee"."hire")=${year}::INTEGER
+      THEN 1
+      ELSE
+        0
+      END
+    )::INTEGER as "Q1",
+    sum(
+      CASE
+        WHEN extract(quarter from "HiredEmployee"."hire")=2
+        and extract(year from "HiredEmployee"."hire")=${year}::INTEGER
+      THEN 1
+      ELSE
+        0
+      END
+    )::INTEGER as "Q2",
+    sum(
+      CASE
+        WHEN extract(quarter from "HiredEmployee"."hire")=3
+        and extract(year from "HiredEmployee"."hire")=${year}::INTEGER
+      THEN 1
+      ELSE
+        0
+      END
+    )::INTEGER as "Q3",
+    sum(
+      CASE
+        WHEN extract(quarter from "HiredEmployee"."hire")=4
+        and extract(year from "HiredEmployee"."hire")=${year}::INTEGER
+      THEN 1
+      ELSE
+        0
+      END
+    )::INTEGER as "Q4"
+    FROM  "HiredEmployee", "Department", "Job" 
+    where "HiredEmployee"."departmentId" = "Department"."id" 
+    and "HiredEmployee"."jobId" = "Job"."id"
+    GROUP BY "department", "job"	
+    ORDER BY "department" ASC, "job" ASC ;`
+  );
+  /**
+    GROUP BY "departmentName", "jobName"	  
+   
+  Prisma.sql`SELECT "Department"."name" as "departmentName", 
+    "Job"."name"  as "jobName", 
+    extract(year from "HiredEmployee"."hire") as "year",
+     extract(quarter from "HiredEmployee"."hire") as "quarter",
+    FROM  "HiredEmployee", "Department", "Job" 
+    where "HiredEmployee"."departmentId" = "Department"."id" 
+    and "HiredEmployee"."jobId" = "Job"."id" 
+    ORDER BY "departmentName" ASC, "jobName" ASC ;`
+   */
+  // console.log(result);
   return res.json(result);
 };
 const getHiredEmployeesPerDepartmentPerYearAboveAverage = async (req, res) => {
