@@ -286,6 +286,24 @@ const deleteHiredEmployeeByID = async (req, res) => {
     errorHandler(e, req, res);
   }
 };
+const getHiredEmployeesPerDepartmentForEachQuaterPerYear = async (req, res) => {
+  const { year } = req.params;
+  const result = await prisma.hiredEmployee.groupBy({
+    by: ['departmentId'],
+    // _count: {
+    //   id: true,
+    // },
+    // orderBy: {
+    //   _count: {
+    //     departmentId: 'desc',
+    //   },
+    // },
+  });
+  return res.json(result);
+};
+const getHiredEmployeesPerDepartmentPerYearAboveAverage = async (req, res) => {
+
+};
 export {
   createHiredEmployee,
   getHiredEmployees,
@@ -293,5 +311,7 @@ export {
   updateHiredEmployeeByID,
   deleteHiredEmployeeByID,
   createManyHiredEmployees,
-  validateManyHiredEmployees
+  validateManyHiredEmployees,
+  getHiredEmployeesPerDepartmentForEachQuaterPerYear,
+  getHiredEmployeesPerDepartmentPerYearAboveAverage
 }

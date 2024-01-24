@@ -119,11 +119,12 @@ const deleteDepartmentByID = async (req, res) => {
     errorHandler(e, req, res);
   }
 };
+
 export {
   createDepartment,
   getDepartments,
   getDepartmentByID,
   updateDepartmentByID,
   deleteDepartmentByID,
-  createManyDepartments,
+  createManyDepartments
 }
