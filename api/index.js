@@ -1,7 +1,7 @@
 import express from 'express';
 import { createJob, createManyJobs, deleteJobByID, getJobs, updateJobByID, getJobByID } from './controllers/jobs_controller.js';
 import { createDepartment, createManyDepartments, deleteDepartmentByID, getDepartments, updateDepartmentByID, getDepartmentByID } from './controllers/departments_controller.js';
-import { createHiredEmployee, createManyHiredEmployees, deleteHiredEmployeeByID, getHiredEmployees, updateHiredEmployeeByID, getHiredEmployeeByID } from './controllers/hired_employees_controller.js';
+import { createHiredEmployee, createManyHiredEmployees, deleteHiredEmployeeByID, getHiredEmployees, updateHiredEmployeeByID, getHiredEmployeeByID, validateManyHiredEmployees } from './controllers/hired_employees_controller.js';
 
 const app = express();
 app.use(express.json());
@@ -35,6 +35,8 @@ departmentsRouter.route('/:id')
   .delete(deleteDepartmentByID);
 hiredEmployeesRouter.route('/collection')
   .post(createManyHiredEmployees);
+hiredEmployeesRouter.route('/collection/validate')
+  .post(validateManyHiredEmployees);
 hiredEmployeesRouter.route('/')
   .post(createHiredEmployee)
   .get(getHiredEmployees);

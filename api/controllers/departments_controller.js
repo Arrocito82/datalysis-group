@@ -1,15 +1,45 @@
 import { PrismaClient, Prisma } from '@prisma/client';
-import { errorHandler } from './error_handler.js';
+import { errorHandler, exists } from './error_handler.js';
 const prisma = new PrismaClient();
 const createManyDepartments=async (req, res) => {
   const departments = req.body;
   // console.log(departments);
+  const requiredFields = ['id', 'name'];
+  // Validación de datos
+  let invalidData = [], validData = [];
+  const departmentsIds = await prisma.department.findMany({
+    select: { id: true },
+    orderBy: {
+      id: 'desc',
+    },
+  });
+  
+  await departments.forEach((department) => {
+    let currentErrors = {};
+    requiredFields.forEach((field) => {
+      if (!department[field]) {
+        currentErrors[field] = `${field} is required`;
+      }
+    });
+    let departmentAlreadyExists = exists(parseInt(department.id), departmentsIds);
+    // console.log(departmentAlreadyExists);
+    if (department.id && departmentAlreadyExists) {
+      currentErrors['id'] = `Hired Employee ID: ${department.id} already exists`;
+    }
+    // console.log(currentErrors);
+    if (Object.keys(currentErrors).length > 0) {
+      invalidData.push({ ...department, errors: currentErrors });
+    } else {
+      validData.push(department);
+    }
+  // console.log(departments);
+  });
   try {
     const createMany = await prisma.department.createMany({
-      data: departments,
+      data: validData,
       skipDuplicates: true, // Skip 'Bobo'
     });
-    return res.json(createMany);
+    return res.json({...createMany, invalidData: invalidData, validData: validData});
   } catch (e) {
     errorHandler(e, req, res);
   }
@@ -53,7 +83,7 @@ const getDepartmentByID = async (req, res) => {
   try {
     const department = await prisma.department.findUnique({
       where: { id: parseInt(id) },
-      include: { jobs: true },
+      include: { departments: true },
     });
     if(!department) {
       throw new Error(`ID ${id} not found`);

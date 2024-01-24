@@ -1,16 +1,46 @@
 import { PrismaClient, Prisma } from '@prisma/client';
-import { errorHandler } from './error_handler.js';
+import { errorHandler, exists } from './error_handler.js';
 const prisma = new PrismaClient();
 
 const createManyJobs=async (req, res) => {
   const jobs = req.body;
+  const requiredFields = ['id', 'name'];
+  // Validación de datos
+  let invalidData = [], validData = [];
+  const jobsIds = await prisma.job.findMany({
+    select: { id: true },
+    orderBy: {
+      id: 'desc',
+    },
+  });
+  
+  await jobs.forEach((job) => {
+    let currentErrors = {};
+    requiredFields.forEach((field) => {
+      if (!job[field]) {
+        currentErrors[field] = `${field} is required`;
+      }
+    });
+    let jobAlreadyExists = exists(parseInt(job.id), jobsIds);
+    // console.log(jobAlreadyExists);
+    if (job.id && jobAlreadyExists) {
+      currentErrors['id'] = `Hired Employee ID: ${job.id} already exists`;
+    }
+    // console.log(currentErrors);
+    if (Object.keys(currentErrors).length > 0) {
+      invalidData.push({ ...job, errors: currentErrors });
+    } else {
+      validData.push(job);
+    }
   // console.log(jobs);
+  });
+
   try {
     const createMany = await prisma.job.createMany({
-      data: jobs,
+      data: validData,
       skipDuplicates: true, // Skip 'Bobo'
     });
-    return res.json(createMany);
+    return res.json({...createMany, invalidData: invalidData, validData: validData});
   } catch (e) {
     errorHandler(e, req, res);
   }
