@@ -1,15 +1,14 @@
 import React,{useState, useEffect} from 'react';
-import axios from 'axios';
 import Form from 'react-bootstrap/Form';
 import Table from 'react-bootstrap/Table';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
-import { URL_BASE } from '../constants';
+import { getYears, getReporte2 } from '../api';
 const HiredEmployeesPerDepartmentPerYearAboveAverage =()=> {
     const [years, setYears] = useState([]);
     const [resultData, setResultData] = useState(null);
     useEffect(() => {
-        axios.get(URL_BASE+'/api/years')
+        getYears()
         .then(response => {
                 let data=[];
                 response.data.forEach(element => data.push(element.year));
@@ -25,7 +24,7 @@ const HiredEmployeesPerDepartmentPerYearAboveAverage =()=> {
     const handleSubmit = () => {
         const yearSelect = document.getElementById('yearSelect');
         // console.log(selectedYear);
-        axios.get(URL_BASE+`/api/hiredEmployees/${yearSelect.value}/reporte2`)
+        getReporte2(yearSelect.value)
             .then(response => {
                 if(response.data.length===0){
                     setResultData(null);

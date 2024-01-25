@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+
 import Form from 'react-bootstrap/Form';
 import Table from 'react-bootstrap/Table';
 import Button from 'react-bootstrap/Button';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Alert from 'react-bootstrap/Alert';
-import { URL_BASE } from '../constants';
+import { createManyDepartments } from '../api';
 
 function Departments() {
     const [file, setFile] = useState(null);
@@ -43,8 +43,8 @@ function Departments() {
     };
 
     const sendData = (data) => {
-        axios.post(URL_BASE+'/api/departments/collection', data)
-            .then((response) => {
+        
+            createManyDepartments(data).then((response) => {
                 console.log(response.data);
                 setResponseData(response.data.invalidData);
                 if (response.data.count > 0) {

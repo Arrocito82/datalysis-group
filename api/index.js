@@ -17,10 +17,10 @@ import { createHiredEmployee,
   getHiredEmployeesPerDepartmentPerYearAboveAverage, 
   getYears } from './controllers/hired_employees_controller.js';
 import { PrismaClient, Prisma } from '@prisma/client';
-const port=process.env.PORT || 3000;	
+const PORT=process.env.API_PORT || 8080;	
 import cors from 'cors';
 const corsOptions ={
-   origin:'*', 
+   origin:process.env.CLIENT_ORIGIN || "http://localhost:8081", 
    credentials:false,//access-control-allow-credentials:true
    optionSuccessStatus:200,
 }
@@ -71,5 +71,5 @@ hiredEmployeesRouter.route('/:id')
   .put(updateHiredEmployeeByID)
   .delete(deleteHiredEmployeeByID);
 app.listen(process.env.PORT, () => {
-  console.log(`Server listening at http://localhost:${port}`);
+  console.log(`Server listening at http://localhost:${PORT}`);
 });

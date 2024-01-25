@@ -1,12 +1,11 @@
 import React, { useState} from 'react';
-import axios from 'axios';
 import Form from 'react-bootstrap/Form';
 import Table from 'react-bootstrap/Table';
 import Button from 'react-bootstrap/Button';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Alert from 'react-bootstrap/Alert';
-import { URL_BASE } from '../constants';
+import {createManyHiredEmployees} from '../api';
 function HiredEmployees() {
     const [file, setFile] = useState(null);
     const [jsonData, setJsonData] = useState(null);
@@ -46,7 +45,7 @@ function HiredEmployees() {
     };
 
     const sendData = (data) => {
-        axios.post(URL_BASE+'/api/hiredEmployees/collection', data)
+        createManyHiredEmployees(data)
             .then((response) => {
                 console.log(response.data);
                 setResponseData(response.data.invalidData);

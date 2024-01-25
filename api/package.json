@@ -23,7 +23,8 @@
     "@prisma/client": "^5.8.1",
     "cors": "^2.8.5",
     "express": "^4.18.2",
-    "moment": "^2.30.1"
+    "moment": "^2.30.1",
+    "dotenv": "^10.0.0"
   },
   "devDependencies": {
     "@types/node": "^20.11.5",
