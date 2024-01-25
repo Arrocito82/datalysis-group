@@ -188,7 +188,7 @@ const createHiredEmployee = async (req, res) => {
         jobId: jobId,
       },
     });
-    hiredEmployee.hire = moment(hiredEmployee.hire).format('MMMM Do YYYY, h:mm:ss a');
+    // hiredEmployee.hire = moment(hiredEmployee.hire).format('MMMM Do YYYY, h:mm:ss a');
     return res.json(hiredEmployee);
   } catch (e) {
     errorHandler(e, req, res);
@@ -204,8 +204,9 @@ const getHiredEmployees = async (req, res) => {
       department: true,
       job: true
     },
+    orderBy:{name:'asc'}
   });
-  hiredEmployees.forEach((hiredEmployee) => hiredEmployee.hire = moment(hiredEmployee.hire).format('MMMM Do YYYY, h:mm:ss a'));
+  // hiredEmployees.forEach((hiredEmployee) => hiredEmployee.hire = moment(hiredEmployee.hire).format('MMMM Do YYYY, h:mm:ss a'));
   return res.json({ data: hiredEmployees });
 };
 
@@ -223,7 +224,7 @@ const getHiredEmployeeByID = async (req, res) => {
     if (!hiredEmployee) {
       return res.status(400).json({ errors: [{ id: `ID ${id} not found` }] });
     }
-    hiredEmployee.hire = moment(hiredEmployee.hire).format('MMMM Do YYYY, h:mm:ss a');
+    // hiredEmployee.hire = moment(hiredEmployee.hire).format('MMMM Do YYYY, h:mm:ss a');
     return res.json(hiredEmployee);
   } catch (e) {
     errorHandler(e, req, res);
@@ -266,7 +267,7 @@ const updateHiredEmployeeByID = async (req, res) => {
       where: { id: parseInt(id) },
       data: data,
     });
-    hiredEmployee.hire = moment(hiredEmployee.hire).format('MMMM Do YYYY, h:mm:ss a');
+    // hiredEmployee.hire = moment(hiredEmployee.hire).format('MMMM Do YYYY, h:mm:ss a');
     return res.json(hiredEmployee);
   } catch (e) {
     errorHandler(e, req, res);
@@ -280,7 +281,7 @@ const deleteHiredEmployeeByID = async (req, res) => {
         id: parseInt(id)
       },
     });
-    hiredEmployee.hire = moment(hiredEmployee.hire).format('MMMM Do YYYY, h:mm:ss a');
+    // hiredEmployee.hire = moment(hiredEmployee.hire).format('MMMM Do YYYY, h:mm:ss a');
     return res.json(hiredEmployee);
   } catch (e) {
     errorHandler(e, req, res);
@@ -349,7 +350,25 @@ const getHiredEmployeesPerDepartmentForEachQuaterPerYear = async (req, res) => {
   return res.json(result);
 };
 const getHiredEmployeesPerDepartmentPerYearAboveAverage = async (req, res) => {
-
+  const { year } = req.params;
+  const result = await prisma.$queryRaw(
+    Prisma.sql`
+    with "hiredEmployeesPerDepartmentPerYear"("id", "department", "hired") as (
+    SELECT "Department"."id", 
+      "Department"."name",
+      count("HiredEmployee"."departmentId")::INTEGER
+      FROM  "Department", "HiredEmployee"
+      where extract(year from "HiredEmployee"."hire")=${year}::INTEGER
+      and "HiredEmployee"."departmentId" = "Department"."id"
+      GROUP BY "Department"."id")
+      SELECT *
+      FROM "hiredEmployeesPerDepartmentPerYear"
+      GROUP BY "hiredEmployeesPerDepartmentPerYear"."id", "hiredEmployeesPerDepartmentPerYear"."department","hiredEmployeesPerDepartmentPerYear"."hired"
+      having "hired" > (select avg("hired") from "hiredEmployeesPerDepartmentPerYear")
+      ORDER BY "hired" DESC
+    ;`
+  );
+  return res.json(result);
 };
 export {
   createHiredEmployee,

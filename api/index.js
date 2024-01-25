@@ -35,7 +35,6 @@ departmentsRouter.route('/:id')
   .put(updateDepartmentByID)
   .delete(deleteDepartmentByID);
 hiredEmployeesRouter.get('/:year/reporte1',getHiredEmployeesPerDepartmentForEachQuaterPerYear);
-// hiredEmployeesRouter.get('/:year/reporte1',getHiredEmployeesPerDepartmentForEachQuaterPerYear);
 hiredEmployeesRouter.get('/:year/reporte2',getHiredEmployeesPerDepartmentPerYearAboveAverage);
 hiredEmployeesRouter.route('/collection')
   .post(createManyHiredEmployees);
