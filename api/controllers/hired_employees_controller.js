@@ -295,7 +295,6 @@ const getHiredEmployeesPerDepartmentForEachQuaterPerYear = async (req, res) => {
     sum(
       CASE
         WHEN extract(quarter from "HiredEmployee"."hire")=1
-        and extract(year from "HiredEmployee"."hire")=${year}::INTEGER
       THEN 1
       ELSE
         0
@@ -304,7 +303,6 @@ const getHiredEmployeesPerDepartmentForEachQuaterPerYear = async (req, res) => {
     sum(
       CASE
         WHEN extract(quarter from "HiredEmployee"."hire")=2
-        and extract(year from "HiredEmployee"."hire")=${year}::INTEGER
       THEN 1
       ELSE
         0
@@ -313,7 +311,6 @@ const getHiredEmployeesPerDepartmentForEachQuaterPerYear = async (req, res) => {
     sum(
       CASE
         WHEN extract(quarter from "HiredEmployee"."hire")=3
-        and extract(year from "HiredEmployee"."hire")=${year}::INTEGER
       THEN 1
       ELSE
         0
@@ -322,7 +319,6 @@ const getHiredEmployeesPerDepartmentForEachQuaterPerYear = async (req, res) => {
     sum(
       CASE
         WHEN extract(quarter from "HiredEmployee"."hire")=4
-        and extract(year from "HiredEmployee"."hire")=${year}::INTEGER
       THEN 1
       ELSE
         0
@@ -331,22 +327,10 @@ const getHiredEmployeesPerDepartmentForEachQuaterPerYear = async (req, res) => {
     FROM  "HiredEmployee", "Department", "Job" 
     where "HiredEmployee"."departmentId" = "Department"."id" 
     and "HiredEmployee"."jobId" = "Job"."id"
+    and extract(year from "HiredEmployee"."hire")=${year}::INTEGER
     GROUP BY "department", "job"	
     ORDER BY "department" ASC, "job" ASC ;`
   );
-  /**
-    GROUP BY "departmentName", "jobName"	  
-   
-  Prisma.sql`SELECT "Department"."name" as "departmentName", 
-    "Job"."name"  as "jobName", 
-    extract(year from "HiredEmployee"."hire") as "year",
-     extract(quarter from "HiredEmployee"."hire") as "quarter",
-    FROM  "HiredEmployee", "Department", "Job" 
-    where "HiredEmployee"."departmentId" = "Department"."id" 
-    and "HiredEmployee"."jobId" = "Job"."id" 
-    ORDER BY "departmentName" ASC, "jobName" ASC ;`
-   */
-  // console.log(result);
   return res.json(result);
 };
 const getHiredEmployeesPerDepartmentPerYearAboveAverage = async (req, res) => {
