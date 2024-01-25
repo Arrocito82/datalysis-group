@@ -1,0 +1,54 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:latest
+    restart: unless-stopped
+    env_file: ./.env
+    environment:
+      - POSTGRES_PASSWORD= $POSTGRES_PASSWORD
+      - POSTGRES_USER= $POSTGRES_USER
+      - POSTGRES_DB= $POSTGRES_DB
+    ports:
+      - $POSTGRES_LOCAL_PORT:$POSTGRES_DOCKER_PORT
+    volumes:
+      - ./postgres-data:/var/lib/postgresql/data
+    networks:
+      - backend
+  
+  api:
+    depends_on:
+      - db
+    build: ./api
+    env_file: ./.env
+    ports:
+      - $API_LOCAL_PORT:$API_DOCKER_PORT
+    environment:
+      - DATABASE_URL=$DATABASE_URL
+      - CLIENT_ORIGIN=$CLIENT_ORIGIN
+      - API_LOCAL_PORT=$API_LOCAL_PORT
+    networks:
+      - backend
+      - frontend
+
+  app:
+    depends_on:
+      - api
+    env_file: ./.env
+    build:
+      context: ./app
+      args:
+        - API_BASE_URL=$API_BASE_URL
+    ports:
+      - $REACT_LOCAL_PORT:$REACT_DOCKER_PORT
+    volumes:
+      - ./app/nginx.conf:/etc/nginx/conf.d/default.conf
+    networks:
+      - frontend  
+
+# volumes: 
+#   db:
+
+networks:
+  backend:
+  frontend:
