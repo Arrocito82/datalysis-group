@@ -204,7 +204,7 @@ const getHiredEmployees = async (req, res) => {
       department: true,
       job: true
     },
-    orderBy:{name:'asc'}
+    orderBy:{id:'asc'}
   });
   // hiredEmployees.forEach((hiredEmployee) => hiredEmployee.hire = moment(hiredEmployee.hire).format('MMMM Do YYYY, h:mm:ss a'));
   return res.json({ data: hiredEmployees });

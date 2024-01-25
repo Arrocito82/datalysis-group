@@ -74,6 +74,9 @@ const getJobs=async (req, res) => {
   const jobs = await prisma.job.findMany({
     // where: { id: id },
     // include: { departments: true },
+    orderBy:{
+      id: 'asc',
+    },
   });
   return res.json({ data: jobs });
 };

@@ -16,6 +16,9 @@
   ],
   "author": "Andrea Monterrosa",
   "license": "ISC",
+  "prisma": {
+    "seed": "node ./prisma/seeds/seed.js"
+  },
   "dependencies": {
     "@prisma/client": "^5.8.1",
     "express": "^4.18.2",

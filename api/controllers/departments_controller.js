@@ -73,6 +73,9 @@ const getDepartments=async (req, res) => {
   const departments = await prisma.department.findMany({
     // where: { id: id },
     // include: { departments: true },
+    orderBy: {
+      id: 'asc',
+    },
   });
   return res.json({ data: departments });
 };
