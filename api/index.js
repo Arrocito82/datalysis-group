@@ -38,6 +38,7 @@ const hiredEmployeesRouter = express.Router({ mergeParams: true });
 apiRouter.use('/jobs', jobsRouter);
 apiRouter.use('/departments', departmentsRouter);
 apiRouter.use('/hiredEmployees', hiredEmployeesRouter);
+apiRouter.get('/years',getYears);
 jobsRouter.route('/collection')
   .post(createManyJobs);
 jobsRouter.route('/')
@@ -56,7 +57,6 @@ departmentsRouter.route('/:id')
   .get(getDepartmentByID)
   .put(updateDepartmentByID)
   .delete(deleteDepartmentByID);
-hiredEmployeesRouter.get('/years',getYears);
 hiredEmployeesRouter.get('/:year/reporte1',getHiredEmployeesPerDepartmentForEachQuaterPerYear);
 hiredEmployeesRouter.get('/:year/reporte2',getHiredEmployeesPerDepartmentPerYearAboveAverage);
 hiredEmployeesRouter.route('/collection')

@@ -196,13 +196,17 @@ const createHiredEmployee = async (req, res) => {
 };
 
 const getYears = async (req, res) => {
-  const years = await prisma.$queryRaw(
-  Prisma.sql`With "Preview"("year") as (SELECT extract(year from "HiredEmployee"."hire")::INTEGER as "year"
-    FROM  "HiredEmployee") 
-    select DISTINCT "year" from "Preview" ORDER BY "Preview"."year" ASC;`
-  );
-  // hiredEmployees.forEach((hiredEmployee) => hiredEmployee.hire = moment(hiredEmployee.hire).format('MMMM Do YYYY, h:mm:ss a'));
-  return res.json(years);
+  try{
+
+    const years = await prisma.$queryRaw(
+      Prisma.sql`With "Preview"("year") as (SELECT extract(year from "HiredEmployee"."hire")::INTEGER as "year"
+      FROM  "HiredEmployee") 
+      select DISTINCT "year" from "Preview" ORDER BY "Preview"."year" ASC;`
+      );
+      // hiredEmployees.forEach((hiredEmployee) => hiredEmployee.hire = moment(hiredEmployee.hire).format('MMMM Do YYYY, h:mm:ss a'));
+    }catch (e) {
+      return res.json([]);
+    }
 };
 const getHiredEmployees = async (req, res) => {
   const hiredEmployees = await prisma.hiredEmployee.findMany({
