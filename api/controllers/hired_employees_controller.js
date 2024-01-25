@@ -195,6 +195,15 @@ const createHiredEmployee = async (req, res) => {
   }
 };
 
+const getYears = async (req, res) => {
+  const years = await prisma.$queryRaw(
+  Prisma.sql`With "Preview"("year") as (SELECT extract(year from "HiredEmployee"."hire")::INTEGER as "year"
+    FROM  "HiredEmployee") 
+    select DISTINCT "year" from "Preview" ORDER BY "Preview"."year" ASC;`
+  );
+  // hiredEmployees.forEach((hiredEmployee) => hiredEmployee.hire = moment(hiredEmployee.hire).format('MMMM Do YYYY, h:mm:ss a'));
+  return res.json(years);
+};
 const getHiredEmployees = async (req, res) => {
   const hiredEmployees = await prisma.hiredEmployee.findMany({
     select: {
@@ -299,7 +308,7 @@ const getHiredEmployeesPerDepartmentForEachQuaterPerYear = async (req, res) => {
       ELSE
         0
       END
-    )::INTEGER as "Q1",
+    )::INTEGER as "q1",
     sum(
       CASE
         WHEN extract(quarter from "HiredEmployee"."hire")=2
@@ -307,7 +316,7 @@ const getHiredEmployeesPerDepartmentForEachQuaterPerYear = async (req, res) => {
       ELSE
         0
       END
-    )::INTEGER as "Q2",
+    )::INTEGER as "q2",
     sum(
       CASE
         WHEN extract(quarter from "HiredEmployee"."hire")=3
@@ -315,7 +324,7 @@ const getHiredEmployeesPerDepartmentForEachQuaterPerYear = async (req, res) => {
       ELSE
         0
       END
-    )::INTEGER as "Q3",
+    )::INTEGER as "q3",
     sum(
       CASE
         WHEN extract(quarter from "HiredEmployee"."hire")=4
@@ -323,7 +332,7 @@ const getHiredEmployeesPerDepartmentForEachQuaterPerYear = async (req, res) => {
       ELSE
         0
       END
-    )::INTEGER as "Q4"
+    )::INTEGER as "q4"
     FROM  "HiredEmployee", "Department", "Job" 
     where "HiredEmployee"."departmentId" = "Department"."id" 
     and "HiredEmployee"."jobId" = "Job"."id"
@@ -363,5 +372,6 @@ export {
   createManyHiredEmployees,
   validateManyHiredEmployees,
   getHiredEmployeesPerDepartmentForEachQuaterPerYear,
-  getHiredEmployeesPerDepartmentPerYearAboveAverage
+  getHiredEmployeesPerDepartmentPerYearAboveAverage,
+  getYears
 }

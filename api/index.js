@@ -1,11 +1,33 @@
 import express from 'express';
 import { createJob, createManyJobs, deleteJobByID, getJobs, updateJobByID, getJobByID } from './controllers/jobs_controller.js';
-import { createDepartment, createManyDepartments, deleteDepartmentByID, getDepartments, updateDepartmentByID, getDepartmentByID } from './controllers/departments_controller.js';
-import { createHiredEmployee, createManyHiredEmployees, deleteHiredEmployeeByID, getHiredEmployees, updateHiredEmployeeByID, getHiredEmployeeByID, validateManyHiredEmployees,getHiredEmployeesPerDepartmentForEachQuaterPerYear,getHiredEmployeesPerDepartmentPerYearAboveAverage  } from './controllers/hired_employees_controller.js';
+import { createDepartment, 
+  createManyDepartments, 
+  deleteDepartmentByID, 
+  getDepartments, 
+  updateDepartmentByID, 
+  getDepartmentByID } from './controllers/departments_controller.js';
+import { createHiredEmployee, 
+  createManyHiredEmployees, 
+  deleteHiredEmployeeByID, 
+  getHiredEmployees, 
+  updateHiredEmployeeByID, 
+  getHiredEmployeeByID, 
+  validateManyHiredEmployees,
+  getHiredEmployeesPerDepartmentForEachQuaterPerYear,
+  getHiredEmployeesPerDepartmentPerYearAboveAverage, 
+  getYears } from './controllers/hired_employees_controller.js';
 import { PrismaClient, Prisma } from '@prisma/client';
+const port=process.env.PORT || 3000;	
+import cors from 'cors';
+const corsOptions ={
+   origin:'*', 
+   credentials:false,//access-control-allow-credentials:true
+   optionSuccessStatus:200,
+}
 const prisma = new PrismaClient();
 const app = express();
 app.use(express.json());
+app.use(cors(corsOptions));
 const apiRouter = express.Router();
 app.use('/api', apiRouter);
 // you need to set mergeParams: true on the router,
@@ -34,6 +56,7 @@ departmentsRouter.route('/:id')
   .get(getDepartmentByID)
   .put(updateDepartmentByID)
   .delete(deleteDepartmentByID);
+hiredEmployeesRouter.get('/years',getYears);
 hiredEmployeesRouter.get('/:year/reporte1',getHiredEmployeesPerDepartmentForEachQuaterPerYear);
 hiredEmployeesRouter.get('/:year/reporte2',getHiredEmployeesPerDepartmentPerYearAboveAverage);
 hiredEmployeesRouter.route('/collection')
@@ -48,5 +71,5 @@ hiredEmployeesRouter.route('/:id')
   .put(updateHiredEmployeeByID)
   .delete(deleteHiredEmployeeByID);
 app.listen(process.env.PORT, () => {
-  console.log(`Server listening at http://localhost:${process.env.PORT}`);
+  console.log(`Server listening at http://localhost:${port}`);
 });
