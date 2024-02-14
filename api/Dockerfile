@@ -1,10 +1,21 @@
-FROM mcr.microsoft.com/devcontainers/javascript-node:1-20-bullseye
+FROM node:20-alpine
 
-WORKDIR /api
-COPY package.json .
+RUN mkdir -p /home/node/app/node_modules && chown -R node:node /home/node/app
+
+WORKDIR /home/node/app
+
+COPY package.json ./
+
+USER node
+
 RUN npm install --silent
+
+COPY --chown=node:node . .
+
 RUN npx prisma generate 
-COPY . .
+
 RUN npx prisma migrate reset --force
-EXPOSE $API_DOCKER_PORT
-CMD npm start
+
+EXPOSE 8080
+
+CMD [ "node", "index.js" ]
