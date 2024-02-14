@@ -203,6 +203,7 @@ const getYears = async (req, res) => {
       FROM  "HiredEmployee") 
       select DISTINCT "year" from "Preview" ORDER BY "Preview"."year" ASC;`
       );
+      return res.json(years);
       // hiredEmployees.forEach((hiredEmployee) => hiredEmployee.hire = moment(hiredEmployee.hire).format('MMMM Do YYYY, h:mm:ss a'));
     }catch (e) {
       return res.json([]);

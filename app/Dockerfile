@@ -1,21 +1,17 @@
-# Stage 1
-FROM node:20-bullseye-slim as build-stage
+FROM node:20-alpine
 
-WORKDIR /app
-COPY package.json .
+RUN mkdir -p /home/node/app/node_modules && chown -R node:node /home/node/app
+
+WORKDIR /home/node/app
+
+COPY package.json ./
+
+USER node
+
 RUN npm install --silent
-COPY . .
 
-ARG API_BASE_URL
-ENV API_BASE_URL=$API_BASE_URL
+COPY --chown=node:node . .
 
-RUN npm run build
+EXPOSE 3000
 
-# Stage 2
-FROM nginx:1.17.0-alpine
-# Copy the ngnix.conf to the container
-COPY nginx.conf /etc/nginx/conf.d/default.conf
-COPY --from=build-stage /app/build /usr/share/nginx/html
-EXPOSE $REACT_DOCKER_PORT
-
-CMD nginx -g 'daemon off;'
+CMD [ "npm", "start" ]

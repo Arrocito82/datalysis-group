@@ -12,6 +12,8 @@ import {
 import Departments from './components/departments';
 import Jobs from './components/jobs';
 import HiredEmployees from './components/hired-employees';
+console.log(process.env);
+console.log("Hola");
 const router = createBrowserRouter([
     {
         path: "/",
